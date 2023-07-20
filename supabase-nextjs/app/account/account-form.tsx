@@ -5,15 +5,17 @@ import {
   Session,
   createClientComponentClient,
 } from "@supabase/auth-helpers-nextjs";
-import Avatar from "./avatar";
+import { Label } from "@/components/ui/label";
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
 
 export default function AccountForm({ session }: { session: Session | null }) {
   const supabase = createClientComponentClient<Database>();
   const [loading, setLoading] = useState(true);
   const [fullname, setFullname] = useState<string | null>(null);
   const [username, setUsername] = useState<string | null>(null);
-  const [website, setWebsite] = useState<string | null>(null);
-  const [avatar_url, setAvatarUrl] = useState<string | null>(null);
+  const [course, setCourse] = useState<string | null>(null);
+
   const user = session?.user;
 
   const getProfile = useCallback(async () => {
@@ -22,7 +24,7 @@ export default function AccountForm({ session }: { session: Session | null }) {
 
       let { data, error, status } = await supabase
         .from("profiles")
-        .select(`full_name, username, website, avatar_url`)
+        .select(`full_name, username, course`)
         .eq("id", user?.id)
         .single();
 
@@ -33,8 +35,7 @@ export default function AccountForm({ session }: { session: Session | null }) {
       if (data) {
         setFullname(data.full_name);
         setUsername(data.username);
-        setWebsite(data.website);
-        setAvatarUrl(data.avatar_url);
+        setCourse(data.course);
       }
     } catch (error) {
       alert("Error loading user data!");
@@ -49,13 +50,11 @@ export default function AccountForm({ session }: { session: Session | null }) {
 
   async function updateProfile({
     username,
-    website,
-    avatar_url,
+    course,
   }: {
     username: string | null;
     fullname: string | null;
-    website: string | null;
-    avatar_url: string | null;
+    course: string | null;
   }) {
     try {
       setLoading(true);
@@ -64,8 +63,7 @@ export default function AccountForm({ session }: { session: Session | null }) {
         id: user?.id as string,
         full_name: fullname,
         username,
-        website,
-        avatar_url,
+        course,
         updated_at: new Date().toISOString(),
       });
       if (error) throw error;
@@ -78,66 +76,64 @@ export default function AccountForm({ session }: { session: Session | null }) {
   }
 
   return (
-    <div className="form-widget">
-          <Avatar
-        // @ts-ignore
-        uid={user.id}
-        url={avatar_url}
-        size={150}
-        onUpload={(url) => {
-          setAvatarUrl(url);
-          updateProfile({ fullname, username, website, avatar_url: url });
-        }}
-      />
-      <div>
-        <label htmlFor="email">Email</label>
-        <input id="email" type="text" value={session?.user.email} disabled />
-      </div>
-      <div>
-        <label htmlFor="fullName">Full Name</label>
-        <input
-          id="fullName"
-          type="text"
-          value={fullname || ""}
-          onChange={(e) => setFullname(e.target.value)}
-        />
-      </div>
-      <div>
-        <label htmlFor="username">Username</label>
-        <input
-          id="username"
-          type="text"
-          value={username || ""}
-          onChange={(e) => setUsername(e.target.value)}
-        />
-      </div>
-      <div>
-        <label htmlFor="website">Website</label>
-        <input
-          id="website"
-          type="url"
-          value={website || ""}
-          onChange={(e) => setWebsite(e.target.value)}
-        />
+    <div>
+      <div className="form-widget">
+        <div className="grid w-full max-w-sm items-center gap-1.5">
+          <Label htmlFor="email">Email</Label>
+          <Input
+            type="email"
+            id="email"
+            placeholder="Email"
+            value={session?.user.email}
+            disabled
+          />
+        </div>
+        <div className="grid w-full max-w-sm items-center gap-1.5">
+          <Label htmlFor="fullName">Full Name</Label>
+          <Input
+            type="text"
+            id="fullName"
+            placeholder="Full Name"
+            value={fullname || ""}
+            onChange={(e) => setFullname(e.target.value)}
+          />
+        </div>
+        <div className="grid w-full max-w-sm items-center gap-1.5">
+          <Label htmlFor="username">User Name</Label>
+          <Input
+            type="text"
+            id="username"
+            placeholder="User Name"
+            value={username || ""}
+            onChange={(e) => setUsername(e.target.value)}
+          />
+        </div>
+        <div className="grid w-full max-w-sm items-center gap-1.5">
+          <Label htmlFor="course">Course</Label>
+          <Input
+            type="text"
+            id="course"
+            placeholder="Course"
+            value={course || ""}
+            onChange={(e) => setCourse(e.target.value)}
+          />
+        </div>
       </div>
 
       <div>
-        <button
-          className="button primary block"
-          onClick={() =>
-            updateProfile({ fullname, username, website, avatar_url })
-          }
+        <Button
+          onClick={() => updateProfile({ fullname, username, course })}
           disabled={loading}
         >
           {loading ? "Loading ..." : "Update"}
-        </button>
+        </Button>
       </div>
 
       <div>
         <form action="/auth/signout" method="post">
-          <button className="button block" type="submit">
+          <Button className="button block" type="submit">
             Sign out
-          </button>
+          </Button>
         </form>
       </div>
     </div>

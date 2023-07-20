@@ -11,28 +11,28 @@ export interface Database {
     Tables: {
       profiles: {
         Row: {
-          avatar_url: string | null
+          course: string | null
           full_name: string | null
           id: string
+          role: string
           updated_at: string | null
           username: string | null
-          website: string | null
         }
         Insert: {
-          avatar_url?: string | null
+          course?: string | null
           full_name?: string | null
           id: string
+          role?: string
           updated_at?: string | null
           username?: string | null
-          website?: string | null
         }
         Update: {
-          avatar_url?: string | null
+          course?: string | null
           full_name?: string | null
           id?: string
+          role?: string
           updated_at?: string | null
           username?: string | null
-          website?: string | null
         }
         Relationships: [
           {

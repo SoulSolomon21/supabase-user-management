@@ -16,7 +16,7 @@ export default function AuthForm() {
             theme="dark"
             showLinks={false}
             providers={[]}
-            redirectTo={`http://localhost:3000/auth/callback`}
+            redirectTo={`https://3000-soulsolomon-supabaseuse-bmwtuww7skb.ws-eu102.gitpod.io/auth/callback`}
         />
       )
 }
